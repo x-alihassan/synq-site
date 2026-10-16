@@ -1,0 +1,71 @@
+/* SYNQ website v3 - design tokens (owner: W-FOUND). Names are the contract (ARCHITECTURE section 4).
+   Brand source: ../brand/final/tokens.css. Fonts are loaded by each page's <link>, not here.
+   Theme: html[data-theme="light"|"dark"]; no attribute = follow prefers-color-scheme. */
+
+:root {
+  /* brand (verbatim) */
+  --bg: #FAF9F6; --surface: #FFFFFF; --text: #0B0F14; --muted: #4B5563;
+  --accent: #15803D; --accent-text: #FAF9F6; --border: #7E877E;
+  --chart-old-human: #374151; --chart-ai: #15803D; --chart-hybrid: #7C3AED; --chart-alert: #B45309;
+  --font-display: 'Sora', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --text-xs: .75rem; --text-sm: .875rem; --text-base: 1rem; --text-lg: 1.125rem; --text-xl: 1.375rem;
+  --text-2xl: 1.75rem; --text-3xl: 2.25rem; --text-4xl: 3rem; --text-5xl: 4rem;
+
+  /* extensions: color (light) */
+  --surface-2: #F5F4F0;
+  --hairline: #DAD9D2;            /* decorative dividers only (not a 3:1 UI boundary) */
+  --signal: #16A34A;              /* graphics / large display only on light; never body text */
+  --sage: #667A70; --sage-2: #AAB8B0; --fog: #E7ECE8;
+  --lane-human: var(--chart-old-human);
+  --lane-ai: var(--chart-ai);
+  --lane-hybrid: var(--chart-hybrid);
+  --alert: var(--chart-alert);
+  --danger: #B91C1C;
+  --header-bg: rgba(250, 249, 246, .86);
+  --ring: var(--accent);
+
+  /* extensions: type, space, shape, motion, layout */
+  --text-hero: clamp(2.25rem, 6vw, 4rem);
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px;
+  --space-6: 32px; --space-7: 48px; --space-8: 64px; --space-9: 96px; --space-10: 128px;
+  --radius-s: 6px; --radius-m: 12px; --radius-l: 20px;
+  --ease-out: cubic-bezier(.2, .7, .2, 1); --ease-inout: cubic-bezier(.65, 0, .35, 1);
+  --dur-1: 150ms; --dur-2: 300ms; --dur-3: 600ms;
+  --maxw: 1200px; --header-h: 64px;
+
+  color-scheme: light;
+}
+
+/* explicit dark */
+html[data-theme="dark"], [data-theme="dark"] {
+  --bg: #0B0F14; --surface: #151B22; --text: #FAF9F6; --muted: #CBD5E1;
+  --accent: #22C55E; --accent-text: #052E16; --border: #64748B;
+  --chart-old-human: #CBD5E1; --chart-ai: #22C55E; --chart-hybrid: #A78BFA; --chart-alert: #F59E0B;
+  --surface-2: #1C252E;
+  --hairline: #2A3541;
+  --signal: #22C55E;
+  --sage: #8FA399; --sage-2: #4B5B53; --fog: #1C252E;
+  --danger: #F87171;
+  --header-bg: rgba(11, 15, 20, .86);
+  color-scheme: dark;
+}
+
+/* no attribute: follow the OS. Must mirror the explicit dark block exactly. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) {
+    --bg: #0B0F14; --surface: #151B22; --text: #FAF9F6; --muted: #CBD5E1;
+    --accent: #22C55E; --accent-text: #052E16; --border: #64748B;
+    --chart-old-human: #CBD5E1; --chart-ai: #22C55E; --chart-hybrid: #A78BFA; --chart-alert: #F59E0B;
+    --surface-2: #1C252E;
+    --hairline: #2A3541;
+    --signal: #22C55E;
+    --sage: #8FA399; --sage-2: #4B5B53; --fog: #1C252E;
+    --danger: #F87171;
+    --header-bg: rgba(11, 15, 20, .86);
+    color-scheme: dark;
+  }
+}
+
+body { background: var(--bg); color: var(--text); }

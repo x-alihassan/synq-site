@@ -1,0 +1,160 @@
+/* SYNQ website v3 - "Sy" the tour guide (js/guide.js). Transform/opacity animation only.
+   z-index: below the sticky header (50) and the story-rail dropdown (60). */
+:root { --g-line: #1F2937; --g-skin: #F1C27D; --g-hair: #1F2937; --g-gear: #1F2937; --g-pants: #374151; --g-jacket: #15803D; --g-white: #FAF9F6; }
+html[data-theme="dark"] { --g-line: #FAF9F6; --g-hair: #111827; --g-gear: #0B0F14; --g-pants: #4B5563; --g-jacket: #16A34A; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]):not([data-theme="dark"]) { --g-line: #FAF9F6; --g-hair: #111827; --g-gear: #0B0F14; --g-pants: #4B5563; --g-jacket: #16A34A; } }
+
+/* ---------- controls ---------- */
+.g-ctl {
+  position: fixed; left: 16px; bottom: 16px; z-index: 46; display: flex; gap: 2px; align-items: center;
+  padding: 3px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+  box-shadow: 0 4px 18px rgba(11, 15, 20, .12); transition: transform var(--dur-2, 300ms) var(--ease-out);
+}
+@media (min-width: 900px) {
+  .g-ctl { left: 12px; bottom: 16px; flex-direction: column; gap: 2px; }
+  .g-btn { padding: 0; width: 40px; height: 40px; }
+  .g-btn .g-lbl, .g-toggle > span:not(.g-face) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .g-face { width: 22px; height: 22px; }
+}
+.g-btn {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 36px; min-width: 36px; justify-content: center;
+  padding: 0 11px; border: 0; border-radius: 999px; background: transparent; color: var(--text);
+  font: 500 13px/1 var(--font-body); cursor: pointer;
+}
+.g-btn:hover { background: var(--surface-2); }
+.g-btn:disabled { opacity: .6; cursor: default; }
+.g-motion > span:first-child { font: 600 17px/1 var(--font-mono); }
+.g-btn[hidden] { display: none; }
+.g-toggle[aria-pressed="true"] { background: var(--surface-2); }
+.g-face { width: 18px; height: 18px; border-radius: 50%; background: var(--g-skin); box-shadow: inset 0 5px 0 var(--g-hair), 0 0 0 2px var(--border); position: relative; }
+.g-toggle[aria-pressed="true"] .g-face { box-shadow: inset 0 5px 0 var(--g-hair), 0 0 0 2px var(--accent); }
+.g-toggle[aria-pressed="true"] .g-face::after { content: ""; position: absolute; right: -3px; bottom: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); border: 2px solid var(--surface); }
+
+/* ---------- actor ---------- */
+.g-root[hidden] { display: none; }
+.g-actor { position: fixed; left: 0; top: 0; z-index: 45; width: 92px; height: 115px; pointer-events: none; transform: translate3d(-200px, 120px, 0); transition: opacity .45s ease; }
+.g-actor.is-flying { will-change: transform; }   /* only while moving */
+.g-actor.is-away { opacity: 0; transition: opacity .3s ease; }   /* long moves fade out, move, fade in: no streak */
+/* idle bob: 2px, 5s period, transform-only; OFF while flying, typing or drawing */
+.g-bob { width: 100%; height: 100%; animation: g-bob 5s ease-in-out infinite; }
+.g-actor.is-flying .g-bob, .g-actor.is-talk .g-bob, .g-actor.is-inking .g-bob { animation: none; }
+.g-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.g-actor.is-flip .g-svg { transform: scaleX(-1); }
+@keyframes g-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+
+.g-svg * { vector-effect: non-scaling-stroke; }
+.g-svg .g-head, .g-svg .g-jacket, .g-svg .g-legs rect, .g-svg .g-hair, .g-svg .g-cup, .g-svg .g-boot { stroke: var(--g-line); stroke-width: 1.4; }
+.g-skin { fill: var(--g-skin); }
+.g-arm .g-skin { stroke: var(--g-line); stroke-width: 1.2; }
+.g-hair { fill: var(--g-hair); }
+.g-jacket { fill: var(--g-jacket); }
+.g-sleeve { fill: none; stroke: var(--g-jacket); stroke-width: 9; stroke-linecap: round; }
+.g-collar { fill: var(--g-white); }
+.g-zip { stroke: var(--g-white); stroke-width: 1.4; stroke-dasharray: 2 2; }
+.g-badge { fill: var(--g-white); opacity: .9; }
+.g-legs rect { fill: var(--g-pants); }
+.g-boot { fill: var(--g-gear); }
+.g-eyes { fill: #0B0F14; transform-box: view-box; transform-origin: 60px 43px; animation: g-blink 9s ease-in-out infinite; }
+.g-brow { fill: none; stroke: #0B0F14; stroke-width: 1.4; stroke-linecap: round; }
+.g-cheek { fill: #E8806A; opacity: .35; }
+.g-mouth-c { fill: none; stroke: #0B0F14; stroke-width: 1.6; stroke-linecap: round; }
+.g-mouth-o { fill: #7F1D1D; opacity: 0; }
+.g-actor.is-talk .g-mouth-o { animation: g-talk .6s steps(1, end) infinite; }
+.g-actor.is-talk .g-mouth-c { animation: g-talk .6s steps(1, end) infinite reverse; }
+@keyframes g-talk { 0% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes g-blink { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.15); } }   /* rare, slow */
+.g-band { fill: none; stroke: var(--g-gear); stroke-width: 3.4; stroke-linecap: round; }
+.g-cup { fill: var(--g-gear); }
+.g-boom { fill: none; stroke: var(--g-gear); stroke-width: 2.2; stroke-linecap: round; }
+.g-mic { fill: var(--signal); }
+.g-flame path { fill: var(--signal); }
+.g-flame .g-flame-in { fill: #DCFCE7; }
+.g-flame { transform-box: view-box; transform-origin: 60px 129px; transform: scaleY(.9); transition: transform .8s ease-in-out; }   /* static: no flicker */
+.g-actor.is-flying .g-flame { transform: scaleY(1.15); }
+.g-thumb, .g-finger { fill: none; stroke: var(--g-skin); stroke-width: 3; stroke-linecap: round; opacity: 0; }
+.g-pen path { stroke: #0B0F14; stroke-width: 2.6; stroke-linecap: round; }
+.g-pen circle { fill: var(--signal); }
+.g-pen { opacity: 0; }
+
+/* poses: arms rotate at the shoulder */
+.g-arm { transform-box: view-box; transition: transform .7s ease-in-out; }
+.g-arm-l { transform-origin: 40px 74px; }
+.g-arm-r { transform-origin: 80px 74px; }
+[data-pose="point"] .g-arm-l { transform: rotate(72deg); }
+[data-pose="point"] .g-finger { opacity: 1; }
+[data-pose="draw"] .g-arm-l { transform: rotate(40deg); }
+[data-pose="draw"] .g-pen { opacity: 1; }
+[data-pose="wave"] .g-arm-r { animation: g-wave 2.6s ease-in-out 3; }
+[data-pose="thumbs"] .g-arm-r { transform: rotate(-112deg); }
+[data-pose="thumbs"] .g-thumb { opacity: 1; }
+[data-pose="think"] .g-arm-r { transform: rotate(150deg); }
+@keyframes g-wave { 0%, 100% { transform: rotate(-150deg); } 50% { transform: rotate(-125deg); } }
+
+/* ---------- bubble ---------- */
+.g-bubble {
+  position: fixed; left: 0; top: 0; z-index: 45; width: 268px; max-width: calc(100vw - 20px);
+  padding: 10px 30px 11px 13px; background: var(--surface); color: var(--text);
+  border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 8px 26px rgba(11, 15, 20, .14);
+  animation: g-in .5s ease-out;
+}
+.g-bubble[hidden] { display: none; }
+@keyframes g-in { from { opacity: 0; } to { opacity: 1; } }
+.g-name { margin: 0 0 4px; display: flex; justify-content: space-between; gap: 8px; font: 600 10px/1.2 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.g-dots { color: var(--muted); font-weight: 500; }
+.g-text { margin: 0; position: relative; font: 500 14px/1.45 var(--font-body); }
+.g-ghost { visibility: hidden; }
+.g-typed { position: absolute; inset: 0; }
+.g-close {
+  position: absolute; top: 4px; right: 4px; width: 26px; height: 26px; border: 0; border-radius: 50%;
+  background: transparent; color: var(--muted); font: 400 18px/1 var(--font-body); cursor: pointer;
+}
+.g-close:hover { background: var(--surface-2); color: var(--text); }
+.g-pop { margin-top: 8px; padding: 8px 10px; border-radius: 10px; background: var(--surface-2); display: grid; gap: 2px; }
+.g-pop[hidden] { display: none; }
+.g-pop-n { font: 600 24px/1.1 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text); }
+.g-pop-l { font: 500 11px/1.35 var(--font-mono); color: var(--muted); }
+.g-bubble::before { /* tail */
+  content: ""; position: absolute; width: 12px; height: 12px; background: var(--surface);
+  border: solid var(--border); border-width: 0 0 1px 1px; top: var(--tail, 26px); left: -7px; transform: rotate(45deg);
+}
+.g-bubble[data-side="l"]::before { left: auto; right: -7px; transform: rotate(-135deg); }
+.g-bubble[data-side="t"]::before { top: auto; bottom: -7px; left: 50%; transform: rotate(-45deg); }
+.g-bubble[data-side="b"]::before { top: -7px; left: 50%; transform: rotate(135deg); }
+.g-bubble[data-side="dock"]::before { top: auto; bottom: -7px; left: auto; right: 30px; transform: rotate(-45deg); }
+
+/* ---------- ink ---------- */
+.g-ink { position: absolute; z-index: 4; pointer-events: none; overflow: visible; transition: opacity .4s ease; }
+.g-ink path { fill: none; stroke: var(--signal); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.g-ink.is-out { opacity: 0; }
+
+/* ---------- compact mobile mini-guide ---------- */
+@media (max-width: 899px) {
+  .g-ctl { left: 10px; bottom: 10px; }
+  .g-btn { min-height: 40px; min-width: 40px; padding: 0 10px; }
+  .g-btn .g-lbl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .g-actor { width: 56px; height: 70px; }
+  .g-bubble { width: 300px; padding: 9px 30px 10px 12px; }
+  .g-text { font-size: 13.5px; }
+}
+
+/* ---------- reduced motion / paused tab ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .g-bob, .g-eyes, .g-flame, .g-arm, .g-actor, .g-actor *, .g-bubble, .g-ctl { animation: none !important; transition: none !important; }
+}
+/* "Motion: Off" (html.g-motion-off) is identical to prefers-reduced-motion */
+html.reduced-motion .g-bob, html.reduced-motion .g-eyes, html.reduced-motion .g-flame, html.reduced-motion .g-actor, html.reduced-motion .g-actor *,
+html.reduced-motion .g-bubble, html.reduced-motion .g-ctl,
+html.g-motion-off .g-bob, html.g-motion-off .g-eyes, html.g-motion-off .g-flame, html.g-motion-off .g-actor, html.g-motion-off .g-actor *,
+html.g-motion-off .g-bubble, html.g-motion-off .g-ctl { animation: none !important; transition: none !important; }
+html.g-paused .g-actor * { animation-play-state: paused !important; }
+@media print { .g-ctl, .g-root, .g-ink { display: none !important; } }
+
+/* ---------- RTL (Arabic): dock, controls, bubble and tail mirror ---------- */
+html[dir="rtl"] .g-ctl { left: auto; right: 12px; }
+@media (max-width: 899px) { html[dir="rtl"] .g-ctl { left: auto; right: 10px; } }
+html[dir="rtl"] .g-bubble { padding: 10px 13px 11px 30px; }
+html[dir="rtl"] .g-close { right: auto; left: 4px; }
+html[dir="rtl"] .g-name { letter-spacing: 0; text-transform: none; font-family: var(--font-body); font-size: 12px; }
+html[dir="rtl"] .g-text { font-family: 'IBM Plex Sans Arabic', var(--font-body); line-height: 1.7; }
+html[dir="rtl"] .g-pop-l { font-family: 'IBM Plex Sans Arabic', var(--font-body); }
+html[dir="rtl"] .g-bubble[data-side="dock"]::before { right: auto; left: 30px; }

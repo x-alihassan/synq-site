@@ -1,0 +1,161 @@
+/* SYNQ website v3 - language switch + Arabic typography + RTL overrides. Loaded last on every page.
+   Everything below the switcher block is scoped to html[dir="rtl"] / html[lang="ar"], so English is unaffected.
+   Decision: intraday time axes (bar/line charts, SL heat strip, wallboard tick rail) stay left-to-right in Arabic;
+   layout, legends, labels, tooltips, flows/motifs, cards and navigation mirror. */
+
+/* ---------- pre-paint: hide the page while the Arabic pack loads (removed by js/i18n.js, 3 s safety) ---------- */
+html.i18n-wait body { visibility: hidden; }
+
+/* ---------- language switch (segmented control, injected next to the theme toggle) ---------- */
+.lang-switch { display: inline-flex; flex: none; padding: 2px; gap: 2px; border: 1px solid var(--border); border-radius: 999px; }
+.lang-btn { min-width: 40px; min-height: 32px; padding: 0 10px; border: 0; border-radius: 999px; background: transparent; color: var(--muted);
+  font: 600 var(--text-xs)/1 var(--font-body); cursor: pointer; }
+.lang-btn[lang="ar"] { font-family: 'IBM Plex Sans Arabic', var(--font-body); font-size: var(--text-sm); }
+.lang-btn:hover { color: var(--text); background: var(--surface-2); }
+.lang-btn[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.lang-short { display: none; }
+@media (max-width: 759.98px) {
+  .lang-long { display: none; } .lang-short { display: inline; }
+  .lang-btn { min-width: 36px; padding: 0 8px; }
+}
+/* very narrow: header CTA becomes icon-only (label kept for assistive tech) */
+@media (max-width: 400px) {
+  .header-cta .hc-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .header-cta { padding-inline: 12px; }
+  .header-cta .li-ico { margin: 0; }
+}
+
+/* ---------- Arabic typography ---------- */
+html[lang="ar"] {
+  --font-body: 'Inter', 'IBM Plex Sans Arabic', 'Noto Sans Arabic', 'Segoe UI', Tahoma, system-ui, sans-serif;
+  --font-display: 'Sora', 'IBM Plex Sans Arabic', 'Noto Sans Arabic', 'Segoe UI', Tahoma, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'IBM Plex Sans Arabic', 'Noto Sans Arabic', ui-monospace, monospace;
+}
+/* tracking breaks Arabic joining; uppercase/tracked labels have no Arabic equivalent */
+html[lang="ar"] body, html[lang="ar"] body * { letter-spacing: 0 !important; }
+html[lang="ar"] body { font-size: 1.0625rem; line-height: 1.85; }
+html[lang="ar"] h1, html[lang="ar"] h2, html[lang="ar"] h3, html[lang="ar"] h4 { line-height: 1.45; font-weight: 700; }
+html[lang="ar"] h1 { line-height: 1.35; }
+html[lang="ar"] .lede { line-height: 1.85; }
+html[lang="ar"] .eyebrow, html[lang="ar"] .label, html[lang="ar"] .stamp, html[lang="ar"] .stage-stamp, html[lang="ar"] .sim-stamp,
+html[lang="ar"] .sim-h, html[lang="ar"] .sim-assist-k, html[lang="ar"] .sim-audit summary, html[lang="ar"] .sim-preset-risk,
+html[lang="ar"] .ledger-eyebrow, html[lang="ar"] .callout-label, html[lang="ar"] .stage-legend em, html[lang="ar"] .rail-stats dt,
+html[lang="ar"] .ladder-tag, html[lang="ar"] .sc-unit, html[lang="ar"] .route-res b, html[lang="ar"] .sn-kicker,
+html[lang="ar"] .data-table th, html[lang="ar"] .matrix thead th, html[lang="ar"] .stack-table thead th, html[lang="ar"] .stack-table td::before,
+html[lang="ar"] .matrix td::before, html[lang="ar"] .page-hero .code, html[lang="ar"] .cta > .wrap > p:not(.hero-cta):not(.muted) {
+  text-transform: none;
+}
+/* the mono "eyebrow" becomes a bold Arabic kicker in the accent colour */
+html[lang="ar"] .eyebrow { font-family: var(--font-body); font-size: var(--text-sm); font-weight: 600; color: var(--accent); line-height: 1.6; }
+html[lang="ar"] .stamp, html[lang="ar"] .stage-stamp, html[lang="ar"] .sim-stamp { font-family: var(--font-body); font-size: 12px; line-height: 1.5; white-space: normal; }
+html[lang="ar"] .sim-h, html[lang="ar"] .ledger-eyebrow, html[lang="ar"] .callout-label, html[lang="ar"] .sn-kicker { font-family: var(--font-body); font-size: 13px; }
+html[lang="ar"] .stage-legend em, html[lang="ar"] .rail-stats dt, html[lang="ar"] .ladder-tag, html[lang="ar"] .rail-cap,
+html[lang="ar"] .stage-readout, html[lang="ar"] .hs-legend, html[lang="ar"] .ledger-note, html[lang="ar"] .callout-sub,
+html[lang="ar"] .sim-preset-m, html[lang="ar"] .rail-gate { font-size: 12px; line-height: 1.5; }
+html[lang="ar"] .sc-unit, html[lang="ar"] .sc-note { font-size: 11.5px; }
+html[lang="ar"] .route-res, html[lang="ar"] .route-res b { font-size: 13px; }
+html[lang="ar"] .rail-name { font-size: 16px; }
+html[lang="ar"] .is-compact .rail-name { font-size: 13px; }
+html[lang="ar"] .sl-btn { font-family: var(--font-body); font-size: 12px; }
+html[lang="ar"] .btn { line-height: 1.3; }
+html[lang="ar"] .faq-item > summary { line-height: 1.6; }
+html[lang="ar"] .conv-t { font-size: 30px; }
+html[lang="ar"] .shift-q1, html[lang="ar"] .shift-q2 { line-height: 1.5; }
+html[lang="ar"] .ladder-name { line-height: 1.4; }
+html[lang="ar"] .tour-clock[data-state="word"] { font-family: var(--font-body); font-size: 12px; }
+/* numbers: Western digits, tabular, kept as LTR islands inside Arabic sentences */
+html[dir="rtl"] :is(p, h1, h2, h3, li, td, dd, span) > span.num { direction: ltr; unicode-bidi: isolate; }
+html[lang="ar"] .num { font-variant-numeric: tabular-nums; }
+/* founder name: Arabic first, Latin wordmark-style line under it */
+.fd-name .fd-name-lat { display: block; margin-top: 2px; font-size: .62em; font-weight: 600; color: var(--muted); }
+/* the free-text simulator box follows what is typed */
+html[dir="rtl"] .sim-text { text-align: start; }
+
+/* ---------- RTL: chrome ---------- */
+html[dir="rtl"] .skip-link { left: auto; right: var(--space-2); }
+html[dir="rtl"] .brand { margin-right: 0; margin-left: auto; }
+html[dir="rtl"] .header-row #theme-toggle { margin-left: 0; }
+html[dir="rtl"] .tour-clock, html[dir="rtl"] .tour-rail, html[dir="rtl"] .hs, html[dir="rtl"] .hs-axis { direction: ltr; }
+html[dir="rtl"] .sr-current { text-align: right; }
+html[dir="rtl"] .sr-nav span { display: inline-block; transform: scaleX(-1); }
+html[dir="rtl"] .story-recap { border-left: 1px solid var(--border); border-right: 4px solid var(--accent); }
+html[dir="rtl"] .story-recap .sr-lead { padding-right: 0; padding-left: 44px; }
+html[dir="rtl"] .sr-x { right: auto; left: 6px; }
+
+/* ---------- RTL: base components ---------- */
+html[dir="rtl"] .faq-item > summary::after { margin-right: 0; margin-left: 4px; }
+html[dir="rtl"] .data-table > summary::before { transform: rotate(135deg); }
+html[dir="rtl"] .data-table[open] > summary::before { transform: rotate(45deg) translateY(-2px); }
+html[dir="rtl"] details.limits > summary::before { transform: rotate(135deg); }
+html[dir="rtl"] details.limits[open] > summary::before { transform: rotate(45deg) translateY(-2px); }
+html[dir="rtl"] .data-table th, html[dir="rtl"] .data-table td, html[dir="rtl"] .data-table caption { text-align: right !important; }
+html[dir="rtl"] abbr.term[data-def]::after { text-align: right; }
+@media (max-width: 480px) {
+  html[dir="rtl"] abbr.term[data-def]::after { left: auto; right: 0; }
+}
+html[dir="rtl"] .cta { text-align: right; }
+html[dir="rtl"] .cta li::before { left: auto; right: var(--space-4); }
+html[dir="rtl"] .fd-count { margin-right: 0; margin-left: .3ch; }
+
+/* permission matrix */
+html[dir="rtl"] .matrix, html[dir="rtl"] .matrix tbody, html[dir="rtl"] .matrix tr, html[dir="rtl"] .matrix th, html[dir="rtl"] .matrix td { text-align: right; }
+html[dir="rtl"] .matrix tr { padding: var(--space-3) calc(var(--space-4) + 4px) var(--space-3) var(--space-4); }
+html[dir="rtl"] .matrix tr::before { left: auto; right: 0; }
+html[lang="ar"] .matrix td.detail::before { content: "ما الذي يحدث"; }
+html[lang="ar"] .matrix td.route-cell::before { content: "المسار"; }
+@media (min-width: 760px) {
+  html[dir="rtl"] .matrix tr { padding: 0; }
+  html[dir="rtl"] .matrix tbody th[scope="row"] { box-shadow: inset -4px 0 0 var(--rc); padding-left: var(--space-4); padding-right: var(--space-5); }
+}
+html[dir="rtl"] details.limits li { padding-left: 0; padding-right: var(--space-5); }
+html[dir="rtl"] details.limits li::before { left: auto; right: 4px; }
+
+/* pages */
+html[dir="rtl"] .fit-grid ul, html[dir="rtl"] .calc-block ul { padding-left: 0; padding-right: var(--space-5); }
+html[dir="rtl"] .stack-table th[scope="row"], html[dir="rtl"] .stack-table th, html[dir="rtl"] .stack-table td { text-align: right; }
+html[dir="rtl"] .scorecard li::before, html[dir="rtl"] .beliefs li::before { left: auto; right: var(--space-4); }
+html[dir="rtl"] .scorecard li, html[dir="rtl"] .beliefs li { padding-left: var(--space-4); padding-right: 3.5rem; }
+html[dir="rtl"] .callout { padding-left: 0; padding-right: var(--space-5); border-left: 0; border-right: 3px solid var(--signal); }
+/* convergence motifs flow right-to-left; their words are un-mirrored in place */
+html[dir="rtl"] .stage-rail, html[dir="rtl"] .nf-art, html[dir="rtl"] .hero-svg, html[dir="rtl"] .conv-svg,
+html[dir="rtl"] .route-svg, html[dir="rtl"] .lane-strip, html[dir="rtl"] .calc-svg { transform: scaleX(-1); }
+html[dir="rtl"] .stage-rail text, html[dir="rtl"] .conv-svg text, html[dir="rtl"] .route-svg text, html[dir="rtl"] .calc-svg text {
+  transform: scaleX(-1); transform-box: fill-box; transform-origin: center;
+}
+html[lang="ar"] .rail-labels text { font-family: var(--font-body); }
+
+/* ---------- RTL: SVG text inside charts ----------
+   Arabic labels need direction:rtl for correct word order; text-anchor start/end are swapped so every label keeps
+   the geometry the chart code gave it. Tick numbers stay as they are. */
+html[dir="rtl"] .stage svg text:not(.sc-tick), html[dir="rtl"] .calc-svg text, html[dir="rtl"] .stage-rail text { direction: rtl; }
+html[dir="rtl"] .stage svg text:not(.sc-tick):not([text-anchor]), html[dir="rtl"] .stage svg text:not(.sc-tick)[text-anchor="start"],
+html[dir="rtl"] .calc-svg text:not([text-anchor]), html[dir="rtl"] .calc-svg text[text-anchor="start"] { text-anchor: end; }
+html[dir="rtl"] .stage svg text:not(.sc-tick)[text-anchor="end"], html[dir="rtl"] .calc-svg text[text-anchor="end"],
+html[dir="rtl"] .stage-rail text[text-anchor="end"] { text-anchor: start; }
+
+/* ---------- RTL: tour stages ---------- */
+html[dir="rtl"] .ledger-rows dd { text-align: left; }
+html[dir="rtl"] .ledger-truths li::before { content: "\2190\00a0"; }
+html[dir="rtl"] .ladder-rung { transform: translateX(10px); }
+html[dir="rtl"] .ladder-rung.is-on { transform: none; }
+html[dir="rtl"] .ladder-cur { display: inline-block; transform: scaleX(-1); }
+html[dir="rtl"] .shift-strike { transform-origin: 100% 50%; }
+html[dir="rtl"] .rail-cursor { left: auto; right: 0; }
+html[dir="rtl"] .rail-gate::before { margin-right: 0; margin-left: 8px; }
+html[dir="rtl"] .data-table-scroll caption { text-align: right; }
+html[dir="rtl"] .data-table-scroll td { text-align: left; }
+
+/* ---------- RTL: simulator ---------- */
+html[dir="rtl"] .sim-preset { text-align: right; }
+html[dir="rtl"] .sim-preset[aria-pressed="true"] { box-shadow: inset -3px 0 0 var(--signal); }
+html[dir="rtl"] .sim-line { border-left: 0; border-right: 2px solid transparent; }
+html[dir="rtl"] .sim-line.is-current { border-right-color: var(--signal); }
+html[dir="rtl"] .sim-line[data-status="blocked"] { border-right-color: var(--danger); }
+html[dir="rtl"] .sim-policy-table th, html[dir="rtl"] .sim-policy-table td { text-align: right; }
+html[dir="rtl"] .sim-policy-table th { padding-right: 0; padding-left: 12px; }
+html[dir="rtl"] .sim-a-state, html[dir="rtl"] .sim-preset-m { unicode-bidi: plaintext; }
+
+/* ---------- RTL: calculator ---------- */
+/* sliders: the browser runs RTL range inputs right-to-left (more = left), matching Arabic reading */
+html[dir="rtl"] .calc-formulas li { unicode-bidi: plaintext; text-align: right; }
+html[dir="rtl"] .calc-key { margin-left: 4px; }
